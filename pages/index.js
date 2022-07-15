@@ -10,6 +10,9 @@ import { useRecoilState } from "recoil";
 import { modalState, modalTypeState } from "../atoms/modelAtom";
 import axios from "axios";
 import Widgets from "../components/Widgets";
+import dbConnect from "../utils/dbconnect";
+import Post from "../models/Post";
+import mongoose from "mongoose";
 export default function Home({ posts, articles }) {
   const router = useRouter();
   const { status } = useSession({
@@ -48,6 +51,7 @@ export default function Home({ posts, articles }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+
   if (!session) {
     return {
       redirect: {
@@ -58,8 +62,11 @@ export async function getServerSideProps(context) {
   }
 
   //Get posts on SSR
-  const { data } = await axios.get(`${process.env.NEXTAUTH_URL}/api/posts`);
-  const { posts } = data;
+  // const { data } = await axios.get(`${process.env.NEXTAUTH_URL}/api/posts`);
+  // const { posts } = data;
+  await dbConnect();
+  const data = await Post.find({}).sort({ _id: -1 }).populate("owner");
+  const posts = JSON.parse(JSON.stringify(data));
   //Google news
   const response = await axios.get(
     `https://newsapi.org/v2/top-headlines?country=in&apiKey=${process.env.NEWS_API_KEY}`
