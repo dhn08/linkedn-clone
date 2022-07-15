@@ -12,7 +12,7 @@ import axios from "axios";
 import Widgets from "../components/Widgets";
 import dbConnect from "../utils/dbconnect";
 import Post from "../models/Post";
-import mongoose from "mongoose";
+
 export default function Home({ posts, articles }) {
   const router = useRouter();
   const { status } = useSession({
